@@ -1,28 +1,24 @@
-import { Client, MessageAttachment } from 'discord.js';
 import { constants } from './constants.js';
 
 
 export default class DiscordController{
 
-    constructor(){
-        this.client = new Client();
+    constructor(eventEmitter){
+        this.eventEmitter = eventEmitter;
     }
-    initialize(eventEmitter){
-        this.client.on('ready', () => {
-            console.log(`${this.client.user.tag} logado com sucesso`);
-        });
-        this.client.login(constants.app.TOKEN_APP_DISCORD);
+    initialize(){
+        this.eventEmitter.emit('discord:connect');
         return this;
     }
 
-    heardPing(){
-        
-        this.client.on('message', msg => {
-            if(msg.content == 'ping'){
-                msg.reply('pong');
-            }
+    heardMessagem(){
+
+        this.eventEmitter.emit('discord:message', (msg, reply) => {
+            if(reply != '')
+                msg.reply(reply);
         });
 
         return this;
     }
+
 }
